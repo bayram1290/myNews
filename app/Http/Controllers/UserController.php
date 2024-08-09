@@ -115,7 +115,6 @@ class UserController extends Controller {
         ]);
 
         $user = User::findOrFail(auth()->user()->id);
-
         $user->password = Hash::make($request['password']);
         $user->save();
 

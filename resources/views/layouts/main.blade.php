@@ -8,23 +8,17 @@
     <title>{{ config('app.name', 'myNews') }}</title>
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-</head>
-<body>
-  <div id="app" class="d-flex flex-column min-vh-100">
-    @include('layouts.shared.front_header')
-    <main class="py-4">
-      <div class="container">
-        <div class="row justify-content-center mt-3">
-          <div class="col-md-12">
-            @if ($message = Session::get('success'))
-              <div class="alert alert-success text-center" role="alert"> {{ $message }}</div>
-            @endif
-          </div>
-        </div>
-      </div>
-      @yield('content')
-    </main>
-    @include('layouts.shared.footer')
-  </div>
+  </head>
+  <body>
+    <div id="app" class="d-flex flex-column min-vh-100">
+      @include('layouts.shared.front_header')
+      <main class="py-4">
+        @yield('content')
+      </main>
+      @include('layouts.shared.footer')
+    </div>
+    
+    <script src="{{asset('js/jquery-3.7.1.min.js')}}"></script>
+    @yield('js')
 </body>
 </html>

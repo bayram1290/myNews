@@ -1,18 +1,44 @@
 @extends('layouts.main')
 @section('content')
 <div class="container">
-  <ul class="list-group">
-    @foreach ($news_list as $news)
-      <li class="list-group-item border-0">
-        <a href="{{route('home.news', ['id' => $news->id])}}">
-          <x-news.-single-news-row>
-            @slot('news_title') {{$news->name}} @endslot
-            @slot('news_image') {{$news->image}} @endslot
-            @slot('news_date') {{\Carbon\Carbon::parse($news->created_at)->format('d.m.Y') . ' г.'}} @endslot
-          </x-news.-single-news-row>
-        </a>
-      </li>
-    @endforeach
-  </ul>
+  @if (count($news_list) > 0)
+    @include('pages.front.load_news')
+  @else
+    <p class="text-danger">Пока нет никаких опубликованных новостей</p>
+  @endif
 </div>
+@endsection
+
+@section('js')
+<script type="text/javascript">
+  function getAPIData(pageData){    
+    $.ajax({
+      url:  pageData,
+      type: "get",
+      datatype: "json",
+    })
+    .done(function(data){
+      var news_list = data['news_list']['data'], content='', news_element, base_url = window.location.origin, news_date      
+      news_list.forEach(news => {
+        news_date = new Date(news.created_at)
+        news_element = '<li class="list-group-item border-0"> <a href="'+ news.id  +'"> <div class="card border-0 shadow"> <div class="card-body"> <h1 class="card-title fw-bold text-dark mb-2 text-start">' + news.name + '</h1> <img class="d-block img-fluid object-contain w-25 mx-auto" src="' + base_url + '/storage/' + news.image + '"> <p class="text-end card-text text-muted">' + ("0" + news_date.getDate()).slice(-2) + '.' +  ("0" + (news_date.getMonth() + 1)).slice(-2)  + '.' + news_date.getFullYear() + ' г.</p> </div> </div> </a> </li>'
+        content += news_element
+      })
+      $("#flist_news").empty().html(content)
+    })
+    .fail(function(jqXHR, ajaxOptions, thrownError){ alert('Нет ответа от сервера')  })
+  }
+
+  $(function () {
+    $(document).on('click', '.pagination a', function(event)  {
+      event.preventDefault()
+      $('li').removeClass('active')
+      $(this).parent('li').addClass('active')
+      var url = $(this).attr('href')
+      
+      window.history.pushState("", "", url)
+      getAPIData(url.replace('?', '/api/?'))
+    })
+  });
+</script>
 @endsection
