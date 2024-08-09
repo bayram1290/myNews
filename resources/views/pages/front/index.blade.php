@@ -11,6 +11,7 @@
 
 @section('js')
 <script type="text/javascript">
+  var next_page, prev_page
   function getAPIData(pageData){    
     $.ajax({
       url:  pageData,
@@ -18,6 +19,14 @@
       datatype: "json",
     })
     .done(function(data){
+      $('.pagination li:first').removeClass('disabled').empty()
+      $('.pagination li:last').removeClass('disabled').empty()
+
+      prev_page = data['news_list']['prev_page_url']
+      next_page = data['news_list']['next_page_url']
+      prev_page == null ? $('.pagination li:first').addClass('disabled').html('<span class="page-link" aria-hidden="true">‹</span>'):$('.pagination li:first').html( '<a class="page-link" href="' +  prev_page.replace('/api', '') + '" rel="prev" aria-label="« Previous">‹</a>')
+      next_page == null ? $('.pagination li:last').addClass('disabled').html('<span class="page-link" aria-hidden="true">›</span>'):$('.pagination li:last').html( '<a class="page-link" href="' +  next_page.replace('/api', '')  + '" rel="next" aria-label="« Next">›</a>')
+
       var news_list = data['news_list']['data'], content='', news_element, base_url = window.location.origin, news_date      
       news_list.forEach(news => {
         news_date = new Date(news.created_at)
@@ -25,6 +34,9 @@
         content += news_element
       })
       $("#flist_news").empty().html(content)
+
+
+
     })
     .fail(function(jqXHR, ajaxOptions, thrownError){ alert('Нет ответа от сервера')  })
   }

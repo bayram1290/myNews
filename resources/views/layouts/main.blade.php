@@ -16,8 +16,7 @@
         @yield('content')
       </main>
       @include('layouts.shared.footer')
-    </div>
-    
+    </div>    
     <script src="{{asset('js/jquery-3.7.1.min.js')}}"></script>
     @yield('js')
 </body>
