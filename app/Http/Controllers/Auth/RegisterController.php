@@ -49,7 +49,6 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            // 'name' => ['required', 'string', 'max:255'],
             'login' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -63,7 +62,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data) {
         $user_data = $data;
-        $user_data['password'] = Hash::make($request->password);
+        $user_data['password'] = Hash::make($user_data['password']);
 
         $user = User::create($user_data);
         return $user->assignRole('contentManager');

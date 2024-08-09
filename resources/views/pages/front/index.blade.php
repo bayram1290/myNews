@@ -34,9 +34,6 @@
         content += news_element
       })
       $("#flist_news").empty().html(content)
-
-
-
     })
     .fail(function(jqXHR, ajaxOptions, thrownError){ alert('Нет ответа от сервера')  })
   }
@@ -45,9 +42,10 @@
     $(document).on('click', '.pagination a', function(event)  {
       event.preventDefault()
       $('li').removeClass('active')
-      $(this).parent('li').addClass('active')
+      if( $(this).parent('li').prev().length && $(this).parent('li').next().length ) $(this).parent('li').addClass('active')
+      else $(this).parents('.pagination').find('li:nth(' + ( Number( $(this).attr('href').substring(Number($(this).attr('href').indexOf('page=') + 5))))  + ')').addClass('active')
+    
       var url = $(this).attr('href')
-      
       window.history.pushState("", "", url)
       getAPIData(url.replace('?', '/api/?'))
     })
