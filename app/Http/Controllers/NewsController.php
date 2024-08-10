@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 use App\Models\News;
+use App\Models\NewsView;
 use Auth;
 
 class NewsController extends Controller {
@@ -101,6 +102,7 @@ class NewsController extends Controller {
         if($news->delete()) {
             unlink( public_path('storage/') . $news->image);
         }
+        NewsView::where('news_id', $news->id)->delete();
         return redirect()->route('news.index')->withSuccess('Новость удалена.');
     }
 }

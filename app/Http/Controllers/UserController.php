@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\News;
+use App\Models\NewsView;
 
 class UserController extends Controller {
 
@@ -99,8 +101,12 @@ class UserController extends Controller {
     public function destroy(User $user): RedirectResponse {
         if ($user->hasRole('superAdmin') || $user->id == auth()->user()->id) abort(403, 'У пользователя нет необходимых разрешений.');
 
+        News::where('author', $user->name)->delete();
+        NewsView::where('author_name', $user->name)->delete();
+
         $user->syncRoles([]);
         $user->delete();
+
         return redirect()->route('admin.users.index')->withSuccess('Пользователь удален.');
     }
 

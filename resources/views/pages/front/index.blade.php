@@ -30,7 +30,7 @@
       var news_list = data['news_list']['data'], content='', news_element, base_url = window.location.origin, news_date      
       news_list.forEach(news => {
         news_date = new Date(news.created_at)
-        news_element = '<li class="list-group-item border-0"> <a href="'+ news.id  +'"> <div class="card border-0 shadow"> <div class="card-body"> <h1 class="card-title fw-bold text-dark mb-2 text-start">' + news.name + '</h1> <img class="d-block img-fluid object-contain w-25 mx-auto" src="' + base_url + '/storage/' + news.image + '"> <p class="text-end card-text text-muted">' + ("0" + news_date.getDate()).slice(-2) + '.' +  ("0" + (news_date.getMonth() + 1)).slice(-2)  + '.' + news_date.getFullYear() + ' г.</p> </div> </div> </a> </li>'
+        news_element = '<li class="list-group-item border-0"> <a href="'+ base_url + '/news/' + news.id  +'"> <div class="card border-0 shadow"> <div class="card-body"> <h1 class="card-title fw-bold text-dark mb-2 text-start">' + news.name + '</h1> <img class="d-block img-fluid object-contain w-25 mx-auto" src="' + base_url + '/storage/' + news.image + '"> <p class="text-end card-text text-muted">' + ("0" + news_date.getDate()).slice(-2) + '.' +  ("0" + (news_date.getMonth() + 1)).slice(-2)  + '.' + news_date.getFullYear() + ' г.</p> </div> </div> </a> </li>'
         content += news_element
       })
       $("#flist_news").empty().html(content)
