@@ -11,7 +11,7 @@ use Response;
 
 class FrontController extends Controller {
 
-    public function index(): View { 
+    public function index(): View {
         $news_list = News::orderBy('created_at', 'desc')->paginate('4');
         return view('pages.front.index', compact('news_list'));
     }
@@ -26,7 +26,8 @@ class FrontController extends Controller {
                 ]);
             }
         }
-        return view('pages.front.show_single_news', ['news_data' => News::findOrFail($id)]);
+        $view_count = count(NewsView::where('news_id', $id)->get('news_id'));
+        return view('pages.front.show_single_news', ['news_data' => News::findOrFail($id), 'news_view' => $view_count ]);
     }
 
     public function index_api(Request $request) {

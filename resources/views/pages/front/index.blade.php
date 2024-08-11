@@ -11,43 +11,65 @@
 
 @section('js')
 <script type="text/javascript">
-  var next_page, prev_page
-  function getAPIData(pageData){    
+  var next_page, prev_page, news_links, pagination = $('.pagination').children('li'), iter, arr_limit, page_url, news_list, content='', news_element, base_url = window.location.origin, news_date
+
+  function create_nav(index, limit, link) {    
+    switch (index) {
+      case 0:
+        return link['url']==null ? '<span class="page-link" aria-hidden="true">‹</span>': '<a class="page-link" href="'+ get_url(link['url']) +'" rel="prev" aria-label="« Previous">‹</a>'
+      case limit:     
+        return link['url']==null ? '<span class="page-link" aria-hidden="true">&raquo;</span>': '<a class="page-link" href="'+ get_url(link['url']) +'" rel="next" aria-label="Next »">›</a>'
+      default:
+        return link['active'] ? '<span class="page-link">'+link['label']+'</span>': '<a class="page-link" href="'+get_url(link['url'])+'">'+link['label']+'</a>'
+    }
+  }
+
+
+  function get_url(url) {  return url.replace('/api', '') }
+
+  function getAPIData(pageData){
+    console.log(pageData)
+    
     $.ajax({
       url:  pageData,
       type: "get",
       datatype: "json",
     })
     .done(function(data){
-      $('.pagination li:first').removeClass('disabled').empty()
-      $('.pagination li:last').removeClass('disabled').empty()
+      news_links = data['news_list']['links'], iter=0, arr_limit = (news_links.length - 1)
+      pagination.removeClass('disabled active')
 
-      prev_page = data['news_list']['prev_page_url']
-      next_page = data['news_list']['next_page_url']
-      prev_page == null ? $('.pagination li:first').addClass('disabled').html('<span class="page-link" aria-hidden="true">‹</span>'):$('.pagination li:first').html( '<a class="page-link" href="' +  prev_page.replace('/api', '') + '" rel="prev" aria-label="« Previous">‹</a>')
-      next_page == null ? $('.pagination li:last').addClass('disabled').html('<span class="page-link" aria-hidden="true">›</span>'):$('.pagination li:last').html( '<a class="page-link" href="' +  next_page.replace('/api', '')  + '" rel="next" aria-label="« Next">›</a>')
-
-      var news_list = data['news_list']['data'], content='', news_element, base_url = window.location.origin, news_date      
+      news_links.forEach(link => {      
+        switch (iter) {
+          case 0:
+          case arr_limit:
+            if(link['url']==null) pagination.eq(iter).addClass('disabled')
+            break;        
+          default:
+            if(link['active']) pagination.eq(iter).addClass('active')
+            break;
+        }
+        pagination.eq(iter).empty().html( create_nav(iter, arr_limit, link)  )
+        iter++
+      })
+      
+      var content
+      news_list = data['news_list']['data']
       news_list.forEach(news => {
         news_date = new Date(news.created_at)
         news_element = '<li class="list-group-item border-0"> <a href="'+ base_url + '/news/' + news.id  +'"> <div class="card border-0 shadow"> <div class="card-body"> <h1 class="card-title fw-bold text-dark mb-2 text-start">' + news.name + '</h1> <img class="d-block img-fluid object-contain w-25 mx-auto" src="' + base_url + '/storage/' + news.image + '"> <p class="text-end card-text text-muted">' + ("0" + news_date.getDate()).slice(-2) + '.' +  ("0" + (news_date.getMonth() + 1)).slice(-2)  + '.' + news_date.getFullYear() + ' г.</p> </div> </div> </a> </li>'
         content += news_element
       })
-      $("#flist_news").empty().html(content)
+      $('#flist_news').empty().html(content)
     })
     .fail(function(jqXHR, ajaxOptions, thrownError){ alert('Нет ответа от сервера')  })
   }
 
   $(function () {
     $(document).on('click', '.pagination a', function(event)  {
-      event.preventDefault()
-      $('li').removeClass('active')
-      if( $(this).parent('li').prev().length && $(this).parent('li').next().length ) $(this).parent('li').addClass('active')
-      else $(this).parents('.pagination').find('li:nth(' + ( Number( $(this).attr('href').substring(Number($(this).attr('href').indexOf('page=') + 5))))  + ')').addClass('active')
-    
-      var url = $(this).attr('href')
-      window.history.pushState("", "", url)
-      getAPIData(url.replace('?', '/api/?'))
+      page_url = $(this).attr('href')
+      window.history.pushState("", "", page_url)
+      getAPIData(page_url.replace('?', '/api/?'))
     })
   });
 </script>

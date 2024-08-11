@@ -10,7 +10,7 @@
           <article class="card-subtitle mb-2 text-muted d-flex flex-row justify-content-between">
             <h4>Автор: {{$news_data->author}}</h4>
 
-            <span>Просмотр: {{'3'}}</span>
+            <span>Просмотр: {{$news_view}}</span>
           </article>
           <p class="card-text">{{$news_data->description}}</p>
           <hr class="hr mt-5" />
