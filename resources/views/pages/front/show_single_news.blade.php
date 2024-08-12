@@ -8,9 +8,10 @@
         <div class="card-body">
           <h1 class="card-title font-weight-bold mb-1">{{$news_data->name}}</h1>
           <article class="card-subtitle mb-2 text-muted d-flex flex-row justify-content-between">
-            <h4>Автор: {{$news_data->author}}</h4>
 
+            <h4>Автор: {{$news_data->author}}</h4>
             <span>Просмотр: {{$news_view}}</span>
+
           </article>
           <p class="card-text">{{$news_data->description}}</p>
           <hr class="hr mt-5" />
